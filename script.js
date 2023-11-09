@@ -9,7 +9,6 @@ const getAllPuppies = async () => {
 		const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players`);
 		const puppiesJSON = await response.json();
 		state.puppies = puppiesJSON.data.players;
-		console.log(state.puppies);
 	} catch {
 		console.log(`Error retrieving data from puppies API`);
 	}
@@ -49,7 +48,6 @@ const renderSinglePuppy = async (puppyId) => {
 		<button>Back to Puppy List</button>
 		</section>
 		`
-		console.log(singlePuppy);
 	} catch {
 		main.innerHTML=`
 		<p>Indivual puppy could not be loaded. </p>
@@ -67,6 +65,7 @@ getAllPuppies();
 
 
 const form = document.querySelector(`form`);
+
 form.addEventListener(`submit`, async (event) => {
 	event.preventDefault();
 
@@ -76,28 +75,47 @@ form.addEventListener(`submit`, async (event) => {
 	const teamInput = document.querySelector(`#team`);
 	const statusInput = document.querySelector(`#status`);
 
-	const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players`, {
-		method: `POST`,
-		headers: {
-			"Content-Type": `application/json`
-		},
-		body: JSON.stringify({
-			name: nameInput.value,
-			breed: breedInput.value,
-			imageUrl: imgUrlInput.value,
-			team: teamInput.value,
-			status: statusInput.value
+	try {
+
+		const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players`, {
+			method: `POST`,
+			headers: {
+				"Content-Type": `application/json`
+			},
+			body: JSON.stringify({
+				name: nameInput.value,
+				breed: breedInput.value,
+				imageUrl: imgUrlInput.value,
+				team: teamInput.value,
+				status: statusInput.value
+			})
 		})
-	})
+		
+		console.log(response)
+		
+		getAllPuppies();
+	} catch {
+		console.log(`Error`)
+	}
+})
 
-	console.log(response)
+//dog id hard coded to ensure that user does not accidentally delete dogs via form input
+const deleteDog = document.querySelector(`#delete`);
 
-	getAllPuppies();
-
-	// const responseJSON = await response.JSON();
-	// const newPuppy = responseJSON.data;
-
-	// state.puppies.push(newPuppy);
-	// renderAllPuppies(state.puppies);
+deleteDog.addEventListener(`click`, async () => {
+	fetch (`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players`, {
+		method: `DELETE`,
+	});
+	try {
+		const response = await fetch (`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players/840`,
+		{
+			method: `DELETE`,
+		});
+		const result = await response.json();
+		console.log(result); 
+		getAllPuppies();
+	} catch {
+		console.log(`Dog was not successfully deleted`);
+	}
 
 })
