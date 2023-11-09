@@ -36,6 +36,7 @@ const renderAllPuppies = (puppies) => {
 }
 
 const renderSinglePuppy = async (puppyId) => {
+	try {
 		const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players/${puppyId}`)
 		const puppyJSON = await response.json();
 		const singlePuppy = puppyJSON.data.player;
@@ -48,11 +49,55 @@ const renderSinglePuppy = async (puppyId) => {
 		<button>Back to Puppy List</button>
 		</section>
 		`
+		console.log(singlePuppy);
+	} catch {
+		main.innerHTML=`
+		<p>Indivual puppy could not be loaded. </p>
+		<button>Back to Puppy List</button>
+		`
+	} finally {
 		const button = document.querySelector(`button`);
 		button.addEventListener(`click`, () => {
 			getAllPuppies();
 		})
-		console.log(singlePuppy);
 	}
+}
 
 getAllPuppies();
+
+
+const form = document.querySelector(`form`);
+form.addEventListener(`submit`, async (event) => {
+	event.preventDefault();
+
+	const nameInput = document.querySelector(`#name`);
+	const breedInput = document.querySelector(`#breed`);
+	const imgUrlInput = document.querySelector(`#imgUrl`);
+	const teamInput = document.querySelector(`#team`);
+	const statusInput = document.querySelector(`#status`);
+
+	const response = await fetch(`https://fsa-puppy-bowl.herokuapp.com/api/2310-FSA-ET-WEB-FT-SF/players`, {
+		method: `POST`,
+		headers: {
+			"Content-Type": `application/json`
+		},
+		body: JSON.stringify({
+			name: nameInput.value,
+			breed: breedInput.value,
+			imageUrl: imgUrlInput.value,
+			team: teamInput.value,
+			status: statusInput.value
+		})
+	})
+
+	console.log(response)
+
+	getAllPuppies();
+
+	// const responseJSON = await response.JSON();
+	// const newPuppy = responseJSON.data;
+
+	// state.puppies.push(newPuppy);
+	// renderAllPuppies(state.puppies);
+
+})
